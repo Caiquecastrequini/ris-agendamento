@@ -1,62 +1,55 @@
 const express = require('express');
-const cors = require('cors');
-const sqlite3 = require('sqlite3').verbose();
 const axios = require('axios');
+const xmlbuilder = require('xmlbuilder');
 
 const app = express();
-const port = 3000;
-
-app.use(cors());
 app.use(express.json());
 
-const db = new sqlite3.Database('./ris.db');
+app.post('/sendToMirth', async (req, res) => {
+  try {
+    const data = req.body;
 
-db.run(`
-  CREATE TABLE IF NOT EXISTS ris (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    patientName TEXT,
-    patientId TEXT,
-    examType TEXT,
-    examDate TEXT,
-    examTime TEXT,
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+    // Exemplo: pegar um paciente do JSON recebido (assumindo estrutura igual ao que mandou)
+    const paciente = data.rows[0]; // só o primeiro paciente
+    const header = data.header;
 
-app.post('/agendamento', async (req, res) => {
-  const { patientName, patientId, examType, examDate, examTime } = req.body;
+    // Mapeando as colunas para os valores (para ficar legível)
+    let patientObj = {};
+    header.forEach((key, index) => {
+      patientObj[key] = paciente[index];
+    });
 
-  db.run(
-    `INSERT INTO ris (patientName, patientId, examType, examDate, examTime)
-     VALUES (?, ?, ?, ?, ?)`,
-    [patientName, patientId, examType, examDate, examTime],
-    async function (err) {
-      if (err) return res.status(500).json({ error: err.message });
+    // Construir XML com xmlbuilder
+    const xml = xmlbuilder.create('patient')
+      .ele('id', patientObj.id).up()
+      .ele('patientName', patientObj.patientName).up()
+      .ele('patientId', patientObj.patientId).up()
+      .ele('examType', patientObj.examType).up()
+      .ele('examDate', patientObj.examDate).up()
+      .ele('examTime', patientObj.examTime).up()
+      .ele('createdAt', patientObj.createdAt)
+      .end({ pretty: true });
 
-      // Enviar JSON para o Mirth
-      try {
-        await axios.post('http://localhost:8081/ris', req.body, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        console.log('✅ Enviado ao Mirth com sucesso');
-      } catch (error) {
-        console.error('❌ Erro ao enviar para o Mirth:', error.message);
-      }
+    console.log('XML gerado:\n', xml);
 
-      res.status(201).json({ id: this.lastID, status: 'Agendamento salvo e enviado ao Mirth!' });
-    }
-  );
+    // Enviar para Mirth Connect via POST HTTP
+    const mirthUrl = 'http://localhost:8090'; // ajuste a URL se necessário
+
+    const response = await axios.post(mirthUrl, xml, {
+      headers: { 'Content-Type': 'application/xml' }
+    });
+
+    res.status(200).send({
+      message: 'Dados enviados para o Mirth com sucesso',
+      mirthResponseStatus: response.status
+    });
+  } catch (error) {
+    console.error('Erro ao enviar dados para o Mirth:', error.message);
+    res.status(500).send({ error: error.message });
+  }
 });
 
-app.get('/agendamentos', (req, res) => {
-  db.all('SELECT * FROM ris', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server rodando na porta ${PORT}`);
 });
