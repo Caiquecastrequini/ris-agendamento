@@ -21,19 +21,6 @@ db.run(`CREATE TABLE IF NOT EXISTS ris (
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
 )`);
 
-// Função para escapar caracteres perigosos em XML
-function escapeXml(unsafe) {
-  return unsafe.replace(/[<>&'"]/g, function (c) {
-    return {
-      '<': '&lt;',
-      '>': '&gt;',
-      '&': '&amp;',
-      '\'': '&apos;',
-      '"': '&quot;'
-    }[c];
-  });
-}
-
 app.post('/agendamento', async (req, res) => {
   const { patientName, patientId, examType, examDate, examTime } = req.body;
 
@@ -44,28 +31,18 @@ app.post('/agendamento', async (req, res) => {
     async function (err) {
       if (err) return res.status(500).json({ error: err.message });
 
-      // Gera XML a partir do JSON recebido
-      const xmlData = `
-<ris>
-  <patientName>${escapeXml(patientName)}</patientName>
-  <patientId>${escapeXml(patientId)}</patientId>
-  <examType>${escapeXml(examType)}</examType>
-  <examDate>${escapeXml(examDate)}</examDate>
-  <examTime>${escapeXml(examTime)}</examTime>
-</ris>`.trim();
-
       try {
-        await axios.post('http://localhost:8081/ris', xmlData, {
+        await axios.post('http://localhost:8081/ris', req.body, {
           headers: {
-            'Content-Type': 'application/xml'
+            'Content-Type': 'application/json'
           }
         });
-        console.log('✅ Enviado ao Mirth com sucesso:\n', xmlData);
+        console.log('✅ JSON enviado ao Mirth com sucesso:', req.body);
       } catch (error) {
-        console.error('❌ Erro ao enviar para o Mirth:', error.message);
+        console.error('❌ Erro ao enviar JSON ao Mirth:', error.message);
       }
 
-      res.status(201).json({ id: this.lastID, status: 'Agendamento salvo e enviado ao Mirth!' });
+      res.status(201).json({ id: this.lastID, status: 'Agendamento salvo e JSON enviado ao Mirth!' });
     }
   );
 });
