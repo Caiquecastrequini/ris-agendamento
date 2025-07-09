@@ -9,11 +9,17 @@ app.post('/sendToMirth', async (req, res) => {
   try {
     const data = req.body;
 
+    console.log('JSON recebido:', JSON.stringify(data, null, 2));
+
     // Assumindo o mesmo JSON do seu exemplo, pegamos o primeiro paciente:
     const paciente = data.rows[0];
     const header = data.header;
 
-    // Mapear colunas
+    if (!paciente || !header) {
+      return res.status(400).send({ error: 'Dados inválidos: falta paciente ou header' });
+    }
+
+    // Mapear colunas para objeto
     let patientObj = {};
     header.forEach((key, index) => {
       patientObj[key] = paciente[index];
@@ -30,9 +36,9 @@ app.post('/sendToMirth', async (req, res) => {
       .ele('createdAt', patientObj.createdAt)
       .end({ pretty: true });
 
-    console.log('XML enviado para Mirth:\n', xml);
+    console.log('XML gerado para enviar ao Mirth:\n', xml);
 
-    const mirthUrl = 'http://localhost:8090/'; // sua URL
+    const mirthUrl = 'http://localhost:8090/'; // Ajuste para o endpoint correto do seu canal Mirth
 
     // Enviar XML para Mirth
     const response = await axios.post(mirthUrl, xml, {
@@ -48,8 +54,16 @@ app.post('/sendToMirth', async (req, res) => {
       mirthData: response.data
     });
   } catch (error) {
-    console.error('Erro ao enviar dados para o Mirth:', error.response?.data || error.message);
-    res.status(500).send({ error: error.response?.data || error.message });
+    console.error('Erro ao enviar dados para o Mirth:', error);
+
+    // Enviar mensagem de erro completa para o cliente, se existir response da axios
+    if (error.response) {
+      res.status(error.response.status).send({
+        error: error.response.data || error.message
+      });
+    } else {
+      res.status(500).send({ error: error.message });
+    }
   }
 });
 
