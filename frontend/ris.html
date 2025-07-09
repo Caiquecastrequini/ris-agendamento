@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agendamento RIS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #f0f8ff;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px #ccc;
+    }
+    label, input, select {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <form id="agendamentoForm">
+    <h2>Agendar Exame</h2>
+    <label>Nome do Paciente</label>
+    <input type="text" name="patientName" required />
+
+    <label>ID do Paciente</label>
+    <input type="text" name="patientId" required />
+
+    <label>Tipo de Exame</label>
+    <select name="examType" required>
+      <option value="RX-TORAX">Raio-X de Tórax</option>
+      <option value="TC-CRANIO">Tomografia de Crânio</option>
+      <option value="RM-COLUNA">Ressonância da Coluna</option>
+    </select>
+
+    <label>Data do Exame</label>
+    <input type="date" name="examDate" required />
+
+    <label>Hora do Exame</label>
+    <input type="time" name="examTime" required />
+
+    <button type="submit">Agendar</button>
+  </form>
+
+  <script>
+    document.getElementById('agendamentoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        patientName: form.patientName.value,
+        patientId: form.patientId.value,
+        examType: form.examType.value,
+        examDate: form.examDate.value,
+        examTime: form.examTime.value
+      };
+
+      const res = await fetch('http://localhost:3000/agendamento', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      alert(result.status || 'Erro ao agendar');
+      form.reset();
+    });
+  </script>
+</body>
+</html>
