@@ -11,15 +11,17 @@ app.use(express.json());
 
 const db = new sqlite3.Database('./ris.db');
 
-db.run(`CREATE TABLE IF NOT EXISTS ris (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  patientName TEXT,
-  patientId TEXT,
-  examType TEXT,
-  examDate TEXT,
-  examTime TEXT,
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-)`);
+db.run(`
+  CREATE TABLE IF NOT EXISTS ris (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    patientName TEXT,
+    patientId TEXT,
+    examType TEXT,
+    examDate TEXT,
+    examTime TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
 
 app.post('/agendamento', async (req, res) => {
   const { patientName, patientId, examType, examDate, examTime } = req.body;
@@ -31,18 +33,19 @@ app.post('/agendamento', async (req, res) => {
     async function (err) {
       if (err) return res.status(500).json({ error: err.message });
 
+      // Enviar JSON para o Mirth
       try {
         await axios.post('http://localhost:8081/ris', req.body, {
           headers: {
             'Content-Type': 'application/json'
           }
         });
-        console.log('✅ JSON enviado ao Mirth com sucesso:', req.body);
+        console.log('✅ Enviado ao Mirth com sucesso');
       } catch (error) {
-        console.error('❌ Erro ao enviar JSON ao Mirth:', error.message);
+        console.error('❌ Erro ao enviar para o Mirth:', error.message);
       }
 
-      res.status(201).json({ id: this.lastID, status: 'Agendamento salvo e JSON enviado ao Mirth!' });
+      res.status(201).json({ id: this.lastID, status: 'Agendamento salvo e enviado ao Mirth!' });
     }
   );
 });
