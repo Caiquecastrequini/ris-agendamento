@@ -9,17 +9,17 @@ app.post('/sendToMirth', async (req, res) => {
   try {
     const data = req.body;
 
-    // Exemplo: pegar um paciente do JSON recebido (assumindo estrutura igual ao que mandou)
-    const paciente = data.rows[0]; // só o primeiro paciente
+    // Assumindo o mesmo JSON do seu exemplo, pegamos o primeiro paciente:
+    const paciente = data.rows[0];
     const header = data.header;
 
-    // Mapeando as colunas para os valores (para ficar legível)
+    // Mapear colunas
     let patientObj = {};
     header.forEach((key, index) => {
       patientObj[key] = paciente[index];
     });
 
-    // Construir XML com xmlbuilder
+    // Criar XML
     const xml = xmlbuilder.create('patient')
       .ele('id', patientObj.id).up()
       .ele('patientName', patientObj.patientName).up()
@@ -30,26 +30,28 @@ app.post('/sendToMirth', async (req, res) => {
       .ele('createdAt', patientObj.createdAt)
       .end({ pretty: true });
 
-    console.log('XML gerado:\n', xml);
+    console.log('XML enviado para Mirth:\n', xml);
 
-    // Enviar para Mirth Connect via POST HTTP
-    const mirthUrl = 'http://localhost:8090'; // ajuste a URL se necessário
+    const mirthUrl = 'http://localhost:8090/'; // sua URL
 
+    // Enviar XML para Mirth
     const response = await axios.post(mirthUrl, xml, {
-      headers: { 'Content-Type': 'application/xml' }
+      headers: { 'Content-Type': 'application/xml' },
+      timeout: 5000,
     });
+
+    console.log('Resposta do Mirth:', response.status, response.data);
 
     res.status(200).send({
       message: 'Dados enviados para o Mirth com sucesso',
-      mirthResponseStatus: response.status
+      mirthStatus: response.status,
+      mirthData: response.data
     });
   } catch (error) {
-    console.error('Erro ao enviar dados para o Mirth:', error.message);
-    res.status(500).send({ error: error.message });
+    console.error('Erro ao enviar dados para o Mirth:', error.response?.data || error.message);
+    res.status(500).send({ error: error.response?.data || error.message });
   }
 });
 
 const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server rodando na porta ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server rodando na porta ${PORT}`));
