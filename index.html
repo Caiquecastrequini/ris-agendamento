@@ -10,37 +10,54 @@
       background-color: #001f3f;
       color: white;
       padding: 40px;
+      padding-top: 100px; /* espaço extra por causa do header fixo */
+      box-sizing: border-box;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #002b5c;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      box-sizing: border-box;
     }
-    .header h2 {
-      margin: 0;
-      font-size: 2em;
-      color: #00d1ff;
+
+    .navbar .logo {
+      font-size: 1.5em;
+      font-weight: bold;
       letter-spacing: 2px;
+      color: white; /* Agora o texto MARDUCK está branco */
     }
-    .voltar {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .voltar a {
-      display: inline-block;
+
+    .navbar .voltar-btn {
       background-color: #00d1ff;
       color: #001f3f;
       padding: 10px 20px;
-      font-weight: bold;
       border-radius: 7px;
       text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      margin-left: auto;
     }
-    .voltar a:hover {
+
+    .navbar .voltar-btn:hover {
       background-color: #00a0cc;
     }
+
     h1 {
       text-align: center;
       margin-bottom: 40px;
     }
+
     form {
       max-width: 600px;
       margin: 0 auto;
@@ -48,11 +65,13 @@
       padding: 30px;
       border-radius: 10px;
     }
+
     label {
       display: block;
       margin-bottom: 6px;
       font-weight: bold;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
@@ -61,6 +80,7 @@
       border-radius: 5px;
       font-size: 1em;
     }
+
     button {
       background-color: #00d1ff;
       border: none;
@@ -72,6 +92,7 @@
       border-radius: 7px;
       width: 100%;
     }
+
     button:hover {
       background-color: #00a0cc;
     }
@@ -79,17 +100,14 @@
 </head>
 <body>
 
-  <!-- Botão Voltar -->
-  <div class="voltar">
-    <a href="https://caiquecastrequini.github.io/marduck/">← Voltar</a>
-  </div>
-
-  <!-- Cabeçalho da empresa -->
-  <div class="header">
-    <h2>MARDUCK</h2>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo">MARDUCK</div>
+    <a class="voltar-btn" href="https://caiquecastrequini.github.io/marduck/">← Voltar</a>
   </div>
 
   <h1>Agendamento de Exames - RIS</h1>
+
   <form id="risForm">
     <label for="patientName">Nome do Paciente</label>
     <input type="text" id="patientName" name="patientName" required />
