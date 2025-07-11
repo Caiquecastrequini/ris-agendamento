@@ -2,147 +2,285 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agendamento RIS | MARDUCK</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Novo Agendamento | MARDUCK</title>
   <style>
-    body {
+    /* ===== Menu ===== */
+    html, body {
+      height: 100%;
+      margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #001f3f;
       color: white;
-      padding: 40px;
-      padding-top: 100px; /* espaço extra por causa do header fixo */
-      box-sizing: border-box;
-    }
-
-    /* NAVBAR */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background-color: #002b5c;
-      color: white;
+      background-image: url('https://raw.githubusercontent.com/Caiquecastrequini/marduck/main/abstract-health-healthcare-icon-modern-futuristic-on-modern-blue-background-for-background-image-vector%20(1).jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 30px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-      z-index: 999;
+      flex-direction: column;
+      min-height: 100vh;
       box-sizing: border-box;
     }
 
-    .navbar .logo {
+    body {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      padding-bottom: 0;
+      margin: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 20px;
+      background-color: rgba(0, 26, 53, 0.9);
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      flex-shrink: 0;
+    }
+
+    .logo {
       font-size: 1.5em;
       font-weight: bold;
+      color: white;
       letter-spacing: 2px;
-      color: white; /* Agora o texto MARDUCK está branco */
     }
 
-    .navbar .voltar-btn {
+    .nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      margin-left: 18px;
+      font-size: 0.95em;
+      transition: color 0.3s, background-color 0.3s;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover {
       background-color: #00d1ff;
       color: #001f3f;
-      padding: 10px 20px;
+    }
+
+    .voltar-btn {
+      background-color: #00d1ff;
+      color: #001f3f;
+      padding: 6px 14px;
       border-radius: 7px;
-      text-decoration: none;
-      font-weight: bold;
+      font-weight: 700;
+      margin-left: 24px;
       transition: background-color 0.3s ease;
-      margin-left: auto;
     }
 
-    .navbar .voltar-btn:hover {
-      background-color: #00a0cc;
+    .voltar-btn:hover {
+      background-color: #0099cc;
     }
 
-    h1 {
+    /* ===== Formulário Full Height ===== */
+    form#risForm {
+      background-color: white;
+      color: #001f3f;
+      font-weight: 600;
+      width: 100vw;
+      flex-grow: 1;
+      padding: 40px 60px 40px 60px;
+      box-sizing: border-box;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: calc(100vh - 60px); /* Altura da viewport menos header */
+    }
+
+    /* Título dentro do formulário */
+    form#risForm h1 {
+      margin: 0 0 30px 0;
+      color: #001f3f;
+      font-weight: 700;
+      font-size: 2.2em;
       text-align: center;
-      margin-bottom: 40px;
+      user-select: none;
+      text-shadow: none;
     }
 
-    form {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #003366;
-      padding: 30px;
-      border-radius: 10px;
+    /* Grid para inputs */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 18px 24px;
+      flex-grow: 1;
+      overflow-y: auto;
     }
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border: none;
-      border-radius: 5px;
+    .form-label {
+      background-color: #d9d9d9;
+      padding: 14px 18px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
       font-size: 1em;
+      user-select: none;
+    }
+
+    .form-input {
+      padding: 12px 16px;
+      border: 2px solid #c4c4c4;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+      font-weight: 400;
+      outline-offset: 2px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-input:focus {
+      border-color: #00d1ff;
+      box-shadow: 0 0 8px #00d1ffaa;
+    }
+
+    /* Container dos botões */
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 18px;
+      padding-top: 25px;
+      border-top: 1px solid #ddd;
+      flex-shrink: 0;
     }
 
     button {
-      background-color: #00d1ff;
-      border: none;
-      padding: 15px;
-      font-size: 1.2em;
-      color: #001f3f;
-      font-weight: bold;
       cursor: pointer;
-      border-radius: 7px;
-      width: 100%;
+      font-weight: 700;
+      font-size: 1.1em;
+      padding: 14px 30px;
+      border-radius: 12px;
+      border: none;
+      transition: background-color 0.3s ease;
+      user-select: none;
     }
 
-    button:hover {
-      background-color: #00a0cc;
+    .btn-enviar {
+      background-color: #00d1ff;
+      color: #001f3f;
+    }
+
+    .btn-enviar:hover {
+      background-color: #0099cc;
+    }
+
+    .btn-deletar {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    .btn-deletar:hover {
+      background-color: #c0392b;
+    }
+
+    /* ===== Responsivo ===== */
+    @media (max-width: 700px) {
+      form#risForm {
+        padding: 20px 30px;
+        min-height: auto;
+      }
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 14px 0;
+        max-height: 400px;
+      }
+      .form-label {
+        border-radius: 8px 8px 0 0;
+        background-color: #d9d9d9;
+        padding: 12px 14px;
+      }
+      .form-input {
+        border-radius: 0 0 8px 8px;
+        margin-bottom: 10px;
+      }
+      .button-group {
+        justify-content: center;
+        gap: 14px;
+        padding-top: 18px;
+      }
+      button {
+        width: 48%;
+        padding: 12px 0;
+        font-size: 1em;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
-  <div class="navbar">
+  <header>
     <div class="logo">MARDUCK</div>
-    <a class="voltar-btn" href="https://caiquecastrequini.github.io/marduck/">← Voltar</a>
-  </div>
+    <nav class="nav-links">
+      <a href="https://caiquecastrequini.github.io/marduck/">Início</a>
+      <a href="#">Sobre</a>
+      <a href="#">Soluções</a>
+      <a href="#">Contato</a>
+      <a href="#">Login</a>
+      <a href="https://caiquecastrequini.github.io/ris-agendamento/">RIS</a>
+      <a href="https://caiquecastrequini.github.io/marduck/" class="voltar-btn">← Voltar</a>
+    </nav>
+  </header>
 
-  <h1>Agendamento de Exames - RIS</h1>
+  <form id="risForm" autocomplete="off">
+    <h1>Novo paciente</h1>
+    <div class="form-grid">
+      <div class="form-label">Nome do Paciente</div>
+      <input type="text" id="patientName" name="patientName" required class="form-input" />
 
-  <form id="risForm">
-    <label for="patientName">Nome do Paciente</label>
-    <input type="text" id="patientName" name="patientName" required />
+      <div class="form-label">ID do Paciente</div>
+      <input type="text" id="patientId" name="patientId" required class="form-input" />
 
-    <label for="patientId">ID do Paciente</label>
-    <input type="text" id="patientId" name="patientId" required />
+      <div class="form-label">Tipo de Exame</div>
+      <select id="examType" name="examType" required class="form-input">
+        <option value="">Selecione</option>
+        <option value="RX">Raio-X</option>
+        <option value="MRI">Ressonância Magnética</option>
+        <option value="CT">Tomografia Computadorizada</option>
+        <option value="US">Ultrassonografia</option>
+        <option value="ECG">ECG</option>
+      </select>
 
-    <label for="examType">Tipo de Exame</label>
-    <select id="examType" name="examType" required>
-      <option value="">Selecione</option>
-      <option value="RX">Raio-X</option>
-      <option value="MRI">Ressonância Magnética</option>
-      <option value="CT">Tomografia Computadorizada</option>
-      <option value="US">Ultrassonografia</option>
-    </select>
+      <div class="form-label">Data do Exame</div>
+      <input type="date" id="examDate" name="examDate" required class="form-input" />
 
-    <label for="examDate">Data do Exame</label>
-    <input type="date" id="examDate" name="examDate" required />
+      <div class="form-label">Hora do Exame</div>
+      <input type="time" id="examTime" name="examTime" required class="form-input" />
+    </div>
 
-    <label for="examTime">Hora do Exame</label>
-    <input type="time" id="examTime" name="examTime" required />
-
-    <button type="submit">Agendar</button>
+    <div class="button-group">
+      <button type="reset" class="btn-deletar" title="Limpar dados preenchidos">DELETAR</button>
+      <button type="submit" class="btn-enviar" title="Enviar os dados do agendamento">ENVIAR</button>
+    </div>
   </form>
 
   <script>
-    document.getElementById('risForm').addEventListener('submit', async (e) => {
+    const form = document.getElementById('risForm');
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const data = {
-        patientName: e.target.patientName.value,
-        patientId: e.target.patientId.value,
-        examType: e.target.examType.value,
-        examDate: e.target.examDate.value,
-        examTime: e.target.examTime.value,
+        patientName: form.patientName.value.trim(),
+        patientId: form.patientId.value.trim(),
+        examType: form.examType.value,
+        examDate: form.examDate.value,
+        examTime: form.examTime.value,
       };
 
       try {
@@ -154,7 +292,7 @@
 
         if (response.ok) {
           alert('Agendamento realizado com sucesso!');
-          e.target.reset();
+          form.reset();
         } else {
           alert('Erro ao realizar agendamento.');
         }
